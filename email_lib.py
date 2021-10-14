@@ -36,7 +36,7 @@ class mail_sender:
         self.smtp_server.quit()
 
 
-    def send_mail(self, email_to, email_subject, email_message, content_type='text/plain'):
+    def send_mail(self, email_to, email_subject, email_message, content_type='text/plain', email_cc=[]):
         """ Envoyer un mail 
             content_type:
                 - text/plain
@@ -52,12 +52,11 @@ class mail_sender:
         message += line_return + "Content-Transfer-Encoding: 8bit"
         message += line_return + "From: {}".format(self.email_from)
         message += line_return + "To: {}".format(email_to)
+        message += line_return + "Cc: {}".format(email_cc)
         message += line_return + "Date: {}".format(datetime.datetime.now().strftime('%a, %d %b %Y  %H:%M:%S %Z'))
         message += line_return + "X-Mailer: python"
         message += line_return + "Subject: {}".format(email_subject) + line_return # .replace('\n','').replace('\r','')
         message += line_return + email_message
 
-        print(message)
-
-        self.smtp_server.sendmail(self.email_from, email_to, message.encode("utf-8"))
+        self.smtp_server.sendmail(self.email_from, email_to + email_cc, message.encode("utf-8"))
 
