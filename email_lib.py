@@ -36,18 +36,28 @@ class mail_sender:
         self.smtp_server.quit()
 
 
-    def send_mail(self, email_to, email_subject, email_message):
-        """ Envoyer un mail """
+    def send_mail(self, email_to, email_subject, email_message, content_type='text/plain'):
+        """ Envoyer un mail 
+            content_type:
+                - text/plain
+                - text/html
+        """
+        if content_type == 'text/plain':
+            line_return = "\n"
+        elif content_type == 'text/html':
+            line_return = "<br>"
 
-        message = "Content-Type: text/html; charset=utf-8"
-        message += "\nContent-Disposition: inline"
-        message += "\nContent-Transfer-Encoding: 8bit"
-        message += "\nFrom: {}".format(self.email_from)
-        message += "\nTo: {}".format(email_to)
-        message += "\nDate: {}".format(datetime.datetime.now().strftime('%a, %d %b %Y  %H:%M:%S %Z'))
-        message += "\nX-Mailer: python"
-        message += "\nSubject: {}\n".format(email_subject.replace('\n','').replace('\r',''))
-        message += "\n" + email_message
+        message = "Content-Type: {}; charset=utf-8".format(content_type)
+        message += line_return + "Content-Disposition: inline"
+        message += line_return + "Content-Transfer-Encoding: 8bit"
+        message += line_return + "From: {}".format(self.email_from)
+        message += line_return + "To: {}".format(email_to)
+        message += line_return + "Date: {}".format(datetime.datetime.now().strftime('%a, %d %b %Y  %H:%M:%S %Z'))
+        message += line_return + "X-Mailer: python"
+        message += line_return + "Subject: {}".format(email_subject) + line_return # .replace('\n','').replace('\r','')
+        message += line_return + email_message
 
-        self.smtp_server.sendmail(self.email_from, email_to, message.encode("utf8"))
+        print(message)
+
+        self.smtp_server.sendmail(self.email_from, email_to, message.encode("utf-8"))
 
