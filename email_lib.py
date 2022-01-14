@@ -16,6 +16,10 @@ class mail_sender:
         self.smtp_username = smtp_username
         self.smtp_passwd = smtp_passwd
         self.email_from = email_from
+        # Pour le tls
+        self.smtp_server.ehlo()
+        self.smtp_server.starttls()
+        self.smtp_server.ehlo()
         if autologin:
             self.login()
 
@@ -28,11 +32,6 @@ class mail_sender:
         if passwd is None:
             passwd = self.smtp_passwd
 
-        # Pour le tls
-        # self.smtp_server.ehlo()
-        self.smtp_server.starttls()
-        self.smtp_server.ehlo()
-
         self.smtp_server.login(username, passwd)
 
 
@@ -43,28 +42,7 @@ class mail_sender:
 
 
     def send_mail(self, email_to, email_subject, email_message, email_cc=[], files=[]):
-        """ Envoyer un mail 
-            content_type:
-                - text/plain
-                - text/html
-        """
-        # if content_type == 'text/plain':
-        #     line_return = "\n"
-        # elif content_type == 'text/html':
-        #     line_return = "<br>"
-
-        # message = "Content-Type: {}; charset=utf-8".format(content_type)
-        # message += line_return + "Content-Disposition: inline"
-        # message += line_return + "Content-Transfer-Encoding: 8bit"
-        # message += line_return + "From: {}".format(self.email_from)
-        # message += line_return + "To: {}".format(email_to)
-        # message += line_return + "Cc: {}".format(email_cc)
-        # message += line_return + "Date: {}".format(datetime.datetime.now().strftime('%a, %d %b %Y  %H:%M:%S %Z'))
-        # message += line_return + "X-Mailer: python"
-        # message += line_return + "Subject: {}".format(email_subject) + line_return # .replace('\n','').replace('\r','')
-        # message += line_return + email_message
-
-        # self.smtp_server.sendmail(self.email_from, email_to + email_cc, message.encode("utf-8"))
+        """ Envoyer un mail """
 
         msg = MIMEMultipart()
         msg['From'] = self.email_from
@@ -86,6 +64,3 @@ class mail_sender:
 
         self.login()
         self.smtp_server.sendmail(self.email_from, email_to, msg.as_string())
-        self.logout()
-
-
