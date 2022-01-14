@@ -63,4 +63,4 @@ class mail_sender:
             msg.attach(part)
 
         self.login()
-        self.smtp_server.sendmail(self.email_from, email_to, msg.as_string())
+        self.smtp_server.sendmail(self.email_from, email_to + email_cc, msg.as_string())
