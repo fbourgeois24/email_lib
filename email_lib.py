@@ -29,7 +29,7 @@ class mail_sender:
             passwd = self.smtp_passwd
 
         # Pour le tls
-        self.smtp_server.ehlo()
+        # self.smtp_server.ehlo()
         self.smtp_server.starttls()
         self.smtp_server.ehlo()
 
