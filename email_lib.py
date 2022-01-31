@@ -10,18 +10,14 @@ from email import encoders
 
 class mail_sender:
 
-    def __init__(self, smtp_address, smtp_port, smtp_username, smtp_passwd, email_from, autologin=False):
+    def __init__(self, smtp_address, smtp_port, smtp_username, smtp_passwd, email_from, autologin=True):
 
-        self.smtp_server = smtplib.SMTP(smtp_address, smtp_port)
+        self.smtp_address = smtp_address
+        self.smtp_port = smtp_port
         self.smtp_username = smtp_username
         self.smtp_passwd = smtp_passwd
         self.email_from = email_from
-        # Pour le tls
-        self.smtp_server.ehlo()
-        self.smtp_server.starttls()
-        self.smtp_server.ehlo()
-        if autologin:
-            self.login()
+        self.autologin = autologin
 
 
     def login(self, username=None, passwd=None):
@@ -32,6 +28,10 @@ class mail_sender:
         if passwd is None:
             passwd = self.smtp_passwd
 
+        self.smtp_server = smtplib.SMTP( self.smtp_address,  self.smtp_port)
+        self.smtp_server.ehlo()
+        self.smtp_server.starttls()
+        self.smtp_server.ehlo()
         self.smtp_server.login(username, passwd)
 
 
@@ -62,5 +62,8 @@ class mail_sender:
                             'attachment; filename={}'.format(Path(path).name))
             msg.attach(part)
 
-        self.login()
+        if self.autologin:
+            self.login()
         self.smtp_server.sendmail(self.email_from, email_to + email_cc, msg.as_string())
+        if self.autologin:
+            self.logout()
