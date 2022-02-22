@@ -41,7 +41,7 @@ class mail_sender:
         self.smtp_server.quit()
 
 
-    def send_mail(self, email_to, email_subject, email_message, email_cc=[], files=[]):
+    def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to=[], files=[]):
         """ Envoyer un mail """
 
         msg = MIMEMultipart()
@@ -50,6 +50,7 @@ class mail_sender:
         msg['Cc'] = COMMASPACE.join(email_cc)
         msg['Date'] = formatdate(localtime=True)
         msg['Subject'] = email_subject
+        msg['Reply-to'] = COMMASPACE.join(reply_to)
 
         msg.attach(MIMEText(email_message))
 
