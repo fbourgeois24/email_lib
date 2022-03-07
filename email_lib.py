@@ -66,6 +66,6 @@ class mail_sender:
 
         if self.autologin:
             self.login()
-        self.smtp_server.sendmail(self.email_from, email_to + email_cc, msg.as_string())
+        self.smtp_server.sendmail(self.email_from, tuple(email_to) + tuple(email_cc), msg.as_string())
         if self.autologin:
             self.logout()
