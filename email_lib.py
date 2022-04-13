@@ -41,7 +41,7 @@ class mail_sender:
         self.smtp_server.quit()
 
 
-    def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to="", files=[]):
+    def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to="", files=[], content_type="text"):
         """ Envoyer un mail """
 
         msg = MIMEMultipart()
@@ -53,7 +53,12 @@ class mail_sender:
         if reply_to != "":
             msg.add_header('reply-to', reply_to)
 
-        msg.attach(MIMEText(email_message))
+        if content_type == "text":
+            msg.attach(MIMEText(email_message))
+        elif content_type == "html":
+            msg.attach(MIMEText(email_message, "html"))
+        else:
+            raise ValueError("Wrong content type")
 
         for path in files:
             part = MIMEBase('application', "octet-stream")
