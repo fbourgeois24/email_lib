@@ -7,17 +7,32 @@ from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 from email import encoders
+import logging as log
 
 class mail_sender:
 
-    def __init__(self, smtp_address, smtp_port, smtp_username, smtp_passwd, email_from, autologin=True):
+    configs = {
+        "outlook": {"address": "smtp-mail.outlook.com", "port": 587},
+        "gmail": {"address": "smtp.gmail.com", "port": 587},
+    }
 
-        self.smtp_address = smtp_address
-        self.smtp_port = smtp_port
+
+    def __init__(self, smtp_address, smtp_port, smtp_username, smtp_passwd, email_from, autologin=True, config=None):
+
         self.smtp_username = smtp_username
         self.smtp_passwd = smtp_passwd
         self.email_from = email_from
         self.autologin = autologin
+        # Si une config est précisée on écrase le smtp_address et smtp_port
+        if config is not None:
+            if config not in self.configs:
+                raise ValueError("Invalid config name")
+            else:
+                self.smtp_address = self.configs[config]["address"]
+                self.smtp_port = self.configs[config]["port"]
+        else:
+            self.smtp_address = smtp_address
+            self.smtp_port = smtp_port
 
 
     def login(self, username=None, passwd=None):
@@ -43,34 +58,39 @@ class mail_sender:
 
     def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to="", files=[], content_type="text"):
         """ Envoyer un mail """
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = self.email_from
+            msg['To'] = COMMASPACE.join(email_to)
+            msg['Cc'] = COMMASPACE.join(email_cc)
+            msg['Date'] = formatdate(localtime=True)
+            msg['Subject'] = email_subject
+            if reply_to != "":
+                msg.add_header('reply-to', reply_to)
 
-        msg = MIMEMultipart()
-        msg['From'] = self.email_from
-        msg['To'] = COMMASPACE.join(email_to)
-        msg['Cc'] = COMMASPACE.join(email_cc)
-        msg['Date'] = formatdate(localtime=True)
-        msg['Subject'] = email_subject
-        if reply_to != "":
-            msg.add_header('reply-to', reply_to)
+            if content_type == "text":
+                msg.attach(MIMEText(email_message))
+            elif content_type == "html":
+                email_message = email_message.replace("\n", "<br>")
+                msg.attach(MIMEText(email_message, "html"))
+            else:
+                raise ValueError("Wrong content type")
 
-        if content_type == "text":
-            msg.attach(MIMEText(email_message))
-        elif content_type == "html":
-            msg.attach(MIMEText(email_message, "html"))
-        else:
-            raise ValueError("Wrong content type")
+            for path in files:
+                part = MIMEBase('application', "octet-stream")
+                with open(path, 'rb') as file:
+                    part.set_payload(file.read())
+                encoders.encode_base64(part)
+                part.add_header('Content-Disposition',
+                                'attachment; filename={}'.format(Path(path).name))
+                msg.attach(part)
 
-        for path in files:
-            part = MIMEBase('application', "octet-stream")
-            with open(path, 'rb') as file:
-                part.set_payload(file.read())
-            encoders.encode_base64(part)
-            part.add_header('Content-Disposition',
-                            'attachment; filename={}'.format(Path(path).name))
-            msg.attach(part)
-
-        if self.autologin:
-            self.login()
-        self.smtp_server.sendmail(self.email_from, tuple(email_to) + tuple(email_cc), msg.as_string())
-        if self.autologin:
-            self.logout()
+            if self.autologin:
+                self.login()
+            self.smtp_server.sendmail(self.email_from, tuple(email_to) + tuple(email_cc), msg.as_string())
+            if self.autologin:
+                self.logout()
+            return True
+        except:
+            log.exception("Erreur de lenvoi de l'email")
+            return False
