@@ -56,7 +56,7 @@ class mail_sender:
         self.smtp_server.quit()
 
 
-    def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to="", files=[], content_type="text"):
+    def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to="", files=[], content_type="html"):
         """ Envoyer un mail """
         try:
             msg = MIMEMultipart()
