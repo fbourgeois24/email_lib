@@ -47,7 +47,14 @@ class mail_sender:
         self.smtp_server.ehlo()
         self.smtp_server.starttls()
         self.smtp_server.ehlo()
-        self.smtp_server.login(username, passwd)
+        try:
+            self.smtp_server.login(username, passwd)
+        except:
+            log.exception("Erreur de login de l'email")
+            return False
+        else:
+            return True
+
 
 
     def logout(self):
@@ -86,7 +93,8 @@ class mail_sender:
                 msg.attach(part)
 
             if self.autologin:
-                self.login()
+                if not self.login():
+                    return False
             self.smtp_server.sendmail(self.email_from, tuple(email_to) + tuple(email_cc), msg.as_string())
             if self.autologin:
                 self.logout()
