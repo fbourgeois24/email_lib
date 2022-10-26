@@ -17,7 +17,7 @@ class mail_sender:
     }
 
 
-    def __init__(self, smtp_address, smtp_port, smtp_username, smtp_passwd, email_from, autologin=True, config=None):
+    def __init__(self, smtp_address="", smtp_port="", smtp_username="", smtp_passwd="", email_from="", autologin=True, config=None):
 
         self.smtp_username = smtp_username
         self.smtp_passwd = smtp_passwd
