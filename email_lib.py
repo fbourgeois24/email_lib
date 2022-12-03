@@ -63,7 +63,7 @@ class mail_sender:
         self.smtp_server.quit()
 
 
-    def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to="", files=[], content_type="html"):
+    def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to="", files=[], content_type="html", autologin=None):
         """ Envoyer un mail """
         try:
             msg = MIMEMultipart()
@@ -92,11 +92,11 @@ class mail_sender:
                                 'attachment; filename={}'.format(Path(path).name))
                 msg.attach(part)
 
-            if self.autologin:
+            if (autologin != None and autologin) or (autologin == None and self.autologin):
                 if not self.login():
                     return False
             self.smtp_server.sendmail(self.email_from, tuple(email_to) + tuple(email_cc), msg.as_string())
-            if self.autologin:
+            if (autologin != None and autologin) or (autologin == None and self.autologin):
                 self.logout()
             return True
         except:
