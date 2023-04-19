@@ -14,6 +14,7 @@ class mail_sender:
     configs = {
         "outlook": {"address": "smtp-mail.outlook.com", "port": 587},
         "gmail": {"address": "smtp.gmail.com", "port": 587},
+        "yahoo": {"address": "mail.yahoo.com", "port": 587},
     }
 
 
