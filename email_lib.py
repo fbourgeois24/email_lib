@@ -67,6 +67,10 @@ class mail_sender:
     def send_mail(self, email_to, email_subject, email_message, email_cc=[], reply_to="", files=[], content_type="html", autologin=None):
         """ Envoyer un mail """
         try:
+            if type(email_to) == str:
+                email_to = (email_to,)
+            if type(email_cc) == str:
+                email_cc = (email_cc,)
             msg = MIMEMultipart()
             msg['From'] = self.email_from
             msg['To'] = COMMASPACE.join(email_to)
