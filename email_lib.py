@@ -18,7 +18,8 @@ class mail_sender:
     }
 
 
-    def __init__(self, smtp_address=None, smtp_port=None, smtp_username=None, smtp_passwd=None, email_from=None, reply_to=None, autologin=None, config=None):
+    def __init__(self, smtp_address=None, smtp_port=None, smtp_username=None, smtp_passwd=None, email_from=None, reply_to=None, 
+        autologin=None, config=None):
         """ Si une config est précisée on la lit et on l'écrase par les paramètres si précisés
             La config peut être de 2 types (si pas None) :
             1) str => nom de la config (voir dict configs plus haut)
@@ -107,7 +108,8 @@ class mail_sender:
         self.smtp_server.quit()
 
 
-    def send_mail(self, email_to, email_subject="", email_message="", email_from=None, email_cc=[], reply_to=None, files=[], content_type="html", autologin=None):
+    def send_mail(self, email_to, email_subject="", email_message="", email_from=None, email_cc=[], email_cci=[], reply_to=None, 
+        files=[], content_type="html", autologin=None):
         """ Envoyer un mail """
         try:
             if type(email_to) == str:
@@ -118,6 +120,7 @@ class mail_sender:
             msg['From'] = email_from or self.email_from
             msg['To'] = COMMASPACE.join(email_to)
             msg['Cc'] = COMMASPACE.join(email_cc)
+            msg['Cci'] = COMMASPACE.join(email_cci)
             msg['Date'] = formatdate(localtime=True)
             msg['Subject'] = email_subject
             msg.add_header('reply-to', reply_to or self.reply_to)
