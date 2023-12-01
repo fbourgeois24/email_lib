@@ -120,7 +120,7 @@ class mail_sender:
             msg['From'] = email_from or self.email_from
             msg['To'] = COMMASPACE.join(email_to)
             msg['Cc'] = COMMASPACE.join(email_cc)
-            msg['Cci'] = COMMASPACE.join(email_cci)
+            msg['Bcc'] = COMMASPACE.join(email_cci)
             msg['Date'] = formatdate(localtime=True)
             msg['Subject'] = email_subject
             msg.add_header('reply-to', reply_to or self.reply_to)
@@ -145,7 +145,7 @@ class mail_sender:
             if (autologin != None and autologin) or (autologin == None and self.autologin):
                 if not self.login():
                     return False
-            self.smtp_server.sendmail(self.email_from, tuple(email_to) + tuple(email_cc), msg.as_string())
+            self.smtp_server.sendmail(self.email_from, tuple(email_to) + tuple(email_cc) + tuple(email_cci), msg.as_string())
             if (autologin != None and autologin) or (autologin == None and self.autologin):
                 self.logout()
             return True
