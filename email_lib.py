@@ -88,10 +88,11 @@ class mail_sender:
         if passwd is None:
             passwd = self.smtp_passwd
 
-        self.smtp_server = smtplib.SMTP( self.smtp_address,  self.smtp_port)
+        self.smtp_server = smtplib.SMTP(self.smtp_address, self.smtp_port)
         self.smtp_server.ehlo()
-        self.smtp_server.starttls()
-        self.smtp_server.ehlo()
+        if self.smtp_server.has_extn('STARTTLS'):
+            self.smtp_server.starttls()
+            self.smtp_server.ehlo()
         try:
             self.smtp_server.login(username, passwd)
         except:
